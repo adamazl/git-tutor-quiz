@@ -49,7 +49,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
       </p>
       <p className="font-medium">{question.question}</p>
       <RadioGroup
-        value={selected === null ? undefined : String(selected)}
+        value={String(selected ?? "")}
         onValueChange={(v) => !submitted && setSelected(Number(v))}
       >
         {question.options.map((option, i) => (
