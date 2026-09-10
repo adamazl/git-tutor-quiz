@@ -1,6 +1,8 @@
-# React + TypeScript + Vite
+# Git Tutor Quiz
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A gamified Git tutorial & quiz app, built with React + TypeScript + Vite.
+
+This project was scaffolded from Vite's React-TS template (minimal setup for React with HMR and some Oxlint rules).
 
 Currently, two official plugins are available:
 
