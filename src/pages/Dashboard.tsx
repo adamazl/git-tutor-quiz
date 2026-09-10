@@ -23,8 +23,8 @@ export function Dashboard({ progress }: DashboardProps) {
                 <CardDescription>{topic.summary}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button asChild variant={p?.completed ? "secondary" : "default"}>
-                  <Link to={`/topic/${topic.id}`}>{label}</Link>
+                <Button render={<Link to={`/topic/${topic.id}`} />} variant={p?.completed ? "secondary" : "default"}>
+                  {label}
                 </Button>
               </CardContent>
             </Card>
