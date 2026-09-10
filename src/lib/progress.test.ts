@@ -29,6 +29,17 @@ describe("progress storage", () => {
     window.localStorage.setItem(STORAGE_KEY, "not json");
     expect(loadProgress()).toEqual({});
   });
+
+  it("returns an empty object if stored JSON is valid but the wrong shape", () => {
+    window.localStorage.setItem(STORAGE_KEY, "null");
+    expect(loadProgress()).toEqual({});
+
+    window.localStorage.setItem(STORAGE_KEY, "[1,2]");
+    expect(loadProgress()).toEqual({});
+
+    window.localStorage.setItem(STORAGE_KEY, "5");
+    expect(loadProgress()).toEqual({});
+  });
 });
 
 describe("recordTopicResult", () => {

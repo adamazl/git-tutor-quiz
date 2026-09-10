@@ -21,7 +21,10 @@ describe("App", () => {
 
     expect(screen.getByText("Choose a topic")).toBeInTheDocument();
 
-    await user.click(screen.getAllByRole("link", { name: "Start" })[0]);
+    // The Dashboard's topic links render via Base UI's Button with
+    // nativeButton={false} (it's an <a>, not a <button>), which applies
+    // role="button" — see src/pages/Dashboard.tsx.
+    await user.click(screen.getAllByRole("button", { name: "Start" })[0]);
 
     expect(screen.getByRole("heading", { name: "git init" })).toBeInTheDocument();
   });

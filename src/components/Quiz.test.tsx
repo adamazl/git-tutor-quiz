@@ -65,4 +65,25 @@ describe("Quiz", () => {
     expect(onComplete).toHaveBeenCalledWith(2);
     expect(confetti).toHaveBeenCalledTimes(3);
   });
+
+  it("becomes a terminal, non-resubmittable state after finishing, with no Finish button left to re-click", async () => {
+    const user = userEvent.setup();
+    const onComplete = vi.fn();
+    render(<Quiz questions={questions} onComplete={onComplete} />);
+
+    await user.click(screen.getByRole("radio", { name: "right" }));
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Next question" }));
+
+    await user.click(screen.getByRole("radio", { name: "right" }));
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Finish" }));
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(confetti).toHaveBeenCalledTimes(3);
+    expect(screen.getByText("Quiz complete! Score: 2/2")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Finish" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+  });
 });

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { DiagramRenderer } from "@/components/gitgraphs/DiagramRenderer";
 import { Quiz } from "@/components/Quiz";
 import { topics } from "@/data/topics";
+import { renderWithInlineCode } from "@/lib/inline-code";
 
 interface TopicPageProps {
   onQuizComplete: (topicId: string, score: number, totalQuestions: number) => void;
@@ -30,7 +31,7 @@ export function TopicPage({ onQuizComplete }: TopicPageProps) {
         <h2 className="text-xl font-semibold">{topic.title}</h2>
         {topic.explanation.split("\n\n").map((paragraph, i) => (
           <p key={i} className="mt-2 text-sm leading-relaxed">
-            {paragraph}
+            {renderWithInlineCode(paragraph)}
           </p>
         ))}
       </div>
@@ -44,6 +45,7 @@ export function TopicPage({ onQuizComplete }: TopicPageProps) {
       <div className="border-t pt-6">
         <h3 className="font-medium mb-3">Quiz</h3>
         <Quiz
+          key={topic.id}
           questions={topic.quiz}
           onComplete={(score) => onQuizComplete(topic.id, score, topic.quiz.length)}
         />

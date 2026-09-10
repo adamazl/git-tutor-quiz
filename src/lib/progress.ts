@@ -14,7 +14,11 @@ export function loadProgress(): ProgressMap {
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) return {};
   try {
-    return JSON.parse(raw) as ProgressMap;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      return {};
+    }
+    return parsed as ProgressMap;
   } catch {
     return {};
   }

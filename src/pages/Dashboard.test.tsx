@@ -13,7 +13,9 @@ describe("Dashboard", () => {
 
     expect(screen.getByText("git init")).toBeInTheDocument();
     expect(screen.getByText("git pull")).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Start" })).toHaveLength(9);
+    // nativeButton={false} makes Base UI apply role="button" to the rendered
+    // <a> (it's not a native <button>), so these are queried as buttons.
+    expect(screen.getAllByRole("button", { name: "Start" })).toHaveLength(9);
   });
 
   it("shows Review for a completed topic", () => {
@@ -23,6 +25,6 @@ describe("Dashboard", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole("link", { name: "Review" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Review" })).toBeInTheDocument();
   });
 });

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { QuizQuestion } from "@/data/topics";
+import { renderWithInlineCode } from "@/lib/inline-code";
 
 interface QuizProps {
   questions: QuizQuestion[];
@@ -15,6 +16,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
 
   const question = questions[index];
   const isCorrect = submitted && selected === question.correctIndex;
@@ -35,11 +37,22 @@ export function Quiz({ questions, onComplete }: QuizProps) {
         confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
       }
       onComplete(score);
+      setFinished(true);
       return;
     }
     setIndex((i) => i + 1);
     setSelected(null);
     setSubmitted(false);
+  }
+
+  if (finished) {
+    return (
+      <div className="space-y-4" data-testid="quiz">
+        <p className="font-medium">
+          Quiz complete! Score: {score}/{questions.length}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -69,7 +82,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
           <p className={isCorrect ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
             {isCorrect ? "Correct!" : "Not quite."}
           </p>
-          <p className="text-sm text-muted-foreground">{question.explanation}</p>
+          <p className="text-sm text-muted-foreground">{renderWithInlineCode(question.explanation)}</p>
           <Button onClick={handleNext}>{isLast ? "Finish" : "Next question"}</Button>
         </div>
       )}
