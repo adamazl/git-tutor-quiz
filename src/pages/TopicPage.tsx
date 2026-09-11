@@ -16,7 +16,7 @@ export function TopicPage({ onQuizComplete }: TopicPageProps) {
 
   if (!topic) {
     return (
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <p>Topic not found.</p>
         <Link to="/" className="underline">
           Back to dashboard
@@ -26,7 +26,7 @@ export function TopicPage({ onQuizComplete }: TopicPageProps) {
   }
 
   return (
-    <div className="p-6 max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6 p-4 sm:p-6">
       <div>
         <h2 className="text-xl font-semibold">{topic.title}</h2>
         {topic.explanation.split("\n\n").map((paragraph, i) => (

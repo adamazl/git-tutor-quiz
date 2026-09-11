@@ -10,7 +10,7 @@ interface DashboardProps {
 
 export function Dashboard({ progress }: DashboardProps) {
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <h2 className="text-xl font-semibold mb-4">Choose a topic</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {topics.map((topic) => {
