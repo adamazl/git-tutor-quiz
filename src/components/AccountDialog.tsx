@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -15,6 +16,19 @@ import { friendlyAuthError } from "@/lib/authErrors";
 import { firebaseConfigured } from "@/lib/firebase";
 
 type Mode = "sign-up" | "log-in";
+
+const COPY: Record<Mode, { title: string; description: string; submit: string }> = {
+  "sign-up": {
+    title: "Create your account",
+    description: "Save your quiz progress and pick up where you left off on any device.",
+    submit: "Sign up",
+  },
+  "log-in": {
+    title: "Welcome back",
+    description: "Log in to load your saved progress.",
+    submit: "Log in",
+  },
+};
 
 export function AccountDialog() {
   const [open, setOpen] = useState(false);
@@ -34,6 +48,12 @@ export function AccountDialog() {
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) resetForm();
+  }
+
+  function handleModeChange(nextMode: Mode) {
+    if (nextMode === mode) return;
+    setMode(nextMode);
+    setError(null);
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -60,6 +80,8 @@ export function AccountDialog() {
     }
   }
 
+  const copy = COPY[mode];
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button variant="outline" size="sm" />}>
@@ -68,8 +90,41 @@ export function AccountDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "sign-up" ? "Create an account" : "Log in"}</DialogTitle>
+          <DialogTitle>{copy.title}</DialogTitle>
+          <DialogDescription>{copy.description}</DialogDescription>
         </DialogHeader>
+        <div
+          role="tablist"
+          aria-label="Account mode"
+          className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "sign-up"}
+            onClick={() => handleModeChange("sign-up")}
+            className={`rounded-md py-1.5 text-sm font-medium transition-colors ${
+              mode === "sign-up"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Sign up
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "log-in"}
+            onClick={() => handleModeChange("log-in")}
+            className={`rounded-md py-1.5 text-sm font-medium transition-colors ${
+              mode === "log-in"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Log in
+          </button>
+        </div>
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="account-email">Email</Label>
@@ -96,15 +151,8 @@ export function AccountDialog() {
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setMode(mode === "sign-up" ? "log-in" : "sign-up")}
-            >
-              {mode === "sign-up" ? "Have an account? Log in" : "Need an account? Sign up"}
-            </Button>
-            <Button type="submit" disabled={submitting}>
-              {mode === "sign-up" ? "Sign up" : "Log in"}
+            <Button type="submit" disabled={submitting} className="w-full">
+              {copy.submit}
             </Button>
           </DialogFooter>
         </form>

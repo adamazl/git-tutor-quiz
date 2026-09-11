@@ -38,7 +38,7 @@ export function AccountMenu({ user, onSignOut, onResetProgress }: AccountMenuPro
 
   function handleSignOut() {
     onSignOut();
-    toast.success("Signed out. Progress on this device is still saved.");
+    toast.success("Signed out. Log back in to load your saved progress.");
   }
 
   function handleResetProgress() {
@@ -191,8 +191,8 @@ function ResetProgressDialog({
         <DialogHeader>
           <DialogTitle>Reset progress?</DialogTitle>
           <DialogDescription>
-            This clears every topic&apos;s progress on this device, and in the cloud since
-            you&apos;re signed in. This can&apos;t be undone.
+            This clears every topic&apos;s saved progress for your account. This can&apos;t be
+            undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter showCloseButton>
@@ -239,9 +239,8 @@ function DeleteAccountDialog({ user, open, onOpenChange }: DialogVisibilityProps
         <DialogHeader>
           <DialogTitle>Delete account</DialogTitle>
           <DialogDescription>
-            This permanently deletes your account and your cloud-saved progress. Progress saved
-            on this device stays put unless you reset it separately. Enter your password to
-            confirm.
+            This permanently deletes your account and your saved progress. This can&apos;t be
+            undone. Enter your password to confirm.
           </DialogDescription>
         </DialogHeader>
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
