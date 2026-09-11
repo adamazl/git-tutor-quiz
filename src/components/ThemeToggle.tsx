@@ -20,11 +20,11 @@ const THEME_LABELS = {
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const current = (theme as (typeof THEMES)[number]) ?? "system";
-  const next = THEMES[(THEMES.indexOf(current) + 1) % THEMES.length];
   const Icon = THEME_ICONS[current];
-  const description = `${THEME_LABELS[current]} — click for ${THEME_LABELS[next]}`;
+  const label = THEME_LABELS[current];
 
   function cycleTheme() {
+    const next = THEMES[(THEMES.indexOf(current) + 1) % THEMES.length];
     setTheme(next);
   }
 
@@ -32,17 +32,12 @@ export function ThemeToggle() {
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={cycleTheme}
-            aria-label={description}
-          />
+          <Button variant="ghost" size="icon" onClick={cycleTheme} aria-label={label} />
         }
       >
         <Icon />
       </TooltipTrigger>
-      <TooltipContent>{description}</TooltipContent>
+      <TooltipContent>{label}</TooltipContent>
     </Tooltip>
   );
 }
