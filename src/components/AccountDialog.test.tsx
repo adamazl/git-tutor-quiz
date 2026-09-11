@@ -24,7 +24,7 @@ describe("AccountDialog", () => {
     const user = userEvent.setup();
     render(<AccountDialog />);
 
-    await user.click(screen.getByRole("button", { name: "Sign in to save progress" }));
+    await user.click(screen.getByRole("button", { name: /Sign in to save progress/ }));
     await user.type(screen.getByLabelText("Email"), "a@b.com");
     await user.type(screen.getByLabelText("Password"), "password123");
     await user.click(screen.getByRole("button", { name: "Sign up" }));
@@ -37,7 +37,7 @@ describe("AccountDialog", () => {
     const user = userEvent.setup();
     render(<AccountDialog />);
 
-    await user.click(screen.getByRole("button", { name: "Sign in to save progress" }));
+    await user.click(screen.getByRole("button", { name: /Sign in to save progress/ }));
     await user.click(screen.getByRole("button", { name: "Have an account? Log in" }));
     await user.type(screen.getByLabelText("Email"), "a@b.com");
     await user.type(screen.getByLabelText("Password"), "password123");
@@ -52,7 +52,7 @@ describe("AccountDialog", () => {
     const user = userEvent.setup();
     render(<AccountDialog />);
 
-    await user.click(screen.getByRole("button", { name: "Sign in to save progress" }));
+    await user.click(screen.getByRole("button", { name: /Sign in to save progress/ }));
     await user.type(screen.getByLabelText("Email"), "a@b.com");
     await user.type(screen.getByLabelText("Password"), "password123");
     await user.click(screen.getByRole("button", { name: "Sign up" }));
@@ -65,7 +65,7 @@ describe("AccountDialog", () => {
     const user = userEvent.setup();
     render(<AccountDialog />);
 
-    await user.click(screen.getByRole("button", { name: "Sign in to save progress" }));
+    await user.click(screen.getByRole("button", { name: /Sign in to save progress/ }));
     expect(screen.getByLabelText("Email")).toBeRequired();
     expect(screen.getByLabelText("Password")).toBeRequired();
   });
