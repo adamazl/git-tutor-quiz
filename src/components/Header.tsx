@@ -2,6 +2,7 @@ import type { User } from "firebase/auth";
 import { MenuIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountDialog } from "@/components/AccountDialog";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface HeaderProps {
   totalXp: number;
@@ -27,6 +28,7 @@ export function Header({ totalXp, user, onSignOut, onMenuClick }: HeaderProps) {
       </div>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <p className="text-sm text-muted-foreground whitespace-nowrap">⭐ {totalXp} XP</p>
+        <ThemeToggle />
         {user ? (
           <div className="flex items-center gap-2">
             <p className="hidden truncate text-sm text-muted-foreground sm:block sm:max-w-[10rem]">
