@@ -30,9 +30,24 @@ const COPY: Record<Mode, { title: string; description: string; submit: string }>
   },
 };
 
-export function AccountDialog() {
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<Mode>("sign-up");
+interface AccountDialogProps {
+  /** Controls the dialog externally instead of via its own trigger button. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Hide the default trigger button when something else opens the dialog. */
+  hideTrigger?: boolean;
+  initialMode?: Mode;
+}
+
+export function AccountDialog({
+  open: openProp,
+  onOpenChange: onOpenChangeProp,
+  hideTrigger = false,
+  initialMode = "sign-up",
+}: AccountDialogProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = openProp ?? internalOpen;
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +61,9 @@ export function AccountDialog() {
   }
 
   function handleOpenChange(nextOpen: boolean) {
-    setOpen(nextOpen);
+    if (nextOpen) setMode(initialMode);
+    onOpenChangeProp?.(nextOpen);
+    setInternalOpen(nextOpen);
     if (!nextOpen) resetForm();
   }
 
@@ -84,10 +101,12 @@ export function AccountDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button variant="outline" size="sm" />}>
-        <span className="sm:hidden">Sign in</span>
-        <span className="hidden sm:inline">Sign in to save progress</span>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger render={<Button variant="outline" size="sm" />}>
+          <span className="sm:hidden">Sign in</span>
+          <span className="hidden sm:inline">Sign in to save progress</span>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{copy.title}</DialogTitle>

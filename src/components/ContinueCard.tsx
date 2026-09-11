@@ -4,14 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { topics } from "@/data/topics";
 import type { ProgressMap } from "@/lib/progress";
+import { isTopicUnlocked } from "@/lib/credits";
 
 interface ContinueCardProps {
   progress: ProgressMap;
+  unlockedTopics?: string[];
 }
 
-export function ContinueCard({ progress }: ContinueCardProps) {
+export function ContinueCard({ progress, unlockedTopics = [] }: ContinueCardProps) {
+  // Only ever recommend a topic the user can actually open -- a locked
+  // topic isn't a valid "continue" or "start next" suggestion.
+  const availableTopics = topics.filter((topic) => isTopicUnlocked(topic, unlockedTopics));
   const hasAnyProgress = Object.keys(progress).length > 0;
-  const allCompleted = topics.every((topic) => progress[topic.id]?.completed);
+  const allCompleted = availableTopics.every((topic) => progress[topic.id]?.completed);
 
   if (allCompleted) {
     return (
@@ -27,8 +32,8 @@ export function ContinueCard({ progress }: ContinueCardProps) {
   if (!hasAnyProgress) return null;
 
   const nextTopic =
-    topics.find((topic) => progress[topic.id] && !progress[topic.id].completed) ??
-    topics.find((topic) => !progress[topic.id]);
+    availableTopics.find((topic) => progress[topic.id] && !progress[topic.id].completed) ??
+    availableTopics.find((topic) => !progress[topic.id]);
   if (!nextTopic) return null;
 
   const p = progress[nextTopic.id];

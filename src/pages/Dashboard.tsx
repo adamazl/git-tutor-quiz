@@ -1,16 +1,32 @@
+import { LockIcon } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { AccountDialog } from "@/components/AccountDialog";
 import { ContinueCard } from "@/components/ContinueCard";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { topics } from "@/data/topics";
 import type { ProgressMap } from "@/lib/progress";
+import { isTopicUnlocked } from "@/lib/credits";
 
 interface DashboardProps {
   progress: ProgressMap;
+  unlockedTopics?: string[];
+  credits?: number;
+  signedIn?: boolean;
+  onUnlock?: (topicId: string) => void;
 }
 
-export function Dashboard({ progress }: DashboardProps) {
+export function Dashboard({
+  progress,
+  unlockedTopics = [],
+  credits = 0,
+  signedIn = false,
+  onUnlock = () => {},
+}: DashboardProps) {
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+
   return (
     <div className="p-4 sm:p-6">
       <div className="bg-muted/50 mb-6 flex flex-col items-center gap-3 rounded-lg p-6 text-center sm:p-8">
@@ -22,9 +38,38 @@ export function Dashboard({ progress }: DashboardProps) {
         </p>
       </div>
       <h2 className="text-xl font-semibold mb-4">Choose a topic</h2>
-      <ContinueCard progress={progress} />
+      <ContinueCard progress={progress} unlockedTopics={unlockedTopics} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {topics.map((topic) => {
+          if (!isTopicUnlocked(topic, unlockedTopics)) {
+            const cost = topic.unlockCost ?? 0;
+            const affordable = credits >= cost;
+            return (
+              <Card key={topic.id} className="opacity-75">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <LockIcon className="h-4 w-4" />
+                    {topic.title}
+                  </CardTitle>
+                  <CardDescription>
+                    {topic.summary} Requires {cost} credits.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {signedIn ? (
+                    <Button disabled={!affordable} onClick={() => onUnlock(topic.id)}>
+                      Unlock for {cost} credits
+                    </Button>
+                  ) : (
+                    <Button variant="outline" onClick={() => setAccountDialogOpen(true)}>
+                      Sign in to unlock
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          }
+
           const p = progress[topic.id];
           const label = p?.completed ? "Review" : p ? "Continue" : "Start";
           return (
@@ -46,6 +91,12 @@ export function Dashboard({ progress }: DashboardProps) {
           );
         })}
       </div>
+      <AccountDialog
+        open={accountDialogOpen}
+        onOpenChange={setAccountDialogOpen}
+        hideTrigger
+        initialMode="sign-up"
+      />
     </div>
   );
 }

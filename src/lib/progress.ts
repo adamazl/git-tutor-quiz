@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { User } from "firebase/auth";
-import { loadCloudProgress, saveCloudProgress, mergeProgressMaps } from "@/lib/cloudProgress";
+import {
+  loadCloudProgress,
+  saveCloudProgress,
+  mergeProgressMaps,
+  loadUnlockedTopics,
+  saveCloudUnlocks,
+  mergeUnlockedTopics,
+  unlockTopicCloud,
+} from "@/lib/cloudProgress";
+import { computeCreditBalance, isTopicUnlocked } from "@/lib/credits";
+import { topics as allTopics } from "@/data/topics";
 
 export interface TopicProgress {
   completed: boolean;
@@ -35,11 +45,16 @@ export function computeOverallStats(progress: ProgressMap, totalTopics: number) 
   return { topicsMastered, totalTopics, totalXp };
 }
 
+export type UnlockOutcome =
+  | { ok: true }
+  | { ok: false; reason: "insufficient-credits" | "sign-in-required" | "unavailable" | "error" };
+
 // Progress only persists in the cloud, so it only survives for signed-in
 // users. Signed-out play still updates this in-memory state for the
 // current session, but nothing is saved once the tab closes.
 export function useProgress(totalTopics: number, user?: User | null) {
   const [progress, setProgress] = useState<ProgressMap>({});
+  const [unlockedTopics, setUnlockedTopics] = useState<string[]>([]);
   const syncedUidRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -53,13 +68,17 @@ export function useProgress(totalTopics: number, user?: User | null) {
     let cancelled = false;
     void (async () => {
       try {
-        const cloudProgress = await loadCloudProgress(user.uid);
+        const [cloudProgress, cloudUnlocked] = await Promise.all([
+          loadCloudProgress(user.uid),
+          loadUnlockedTopics(user.uid),
+        ]);
         if (cancelled) return;
         setProgress((prev) => {
           const merged = mergeProgressMaps(prev, cloudProgress);
           void saveCloudProgress(user.uid, merged).catch(() => {});
           return merged;
         });
+        setUnlockedTopics((prev) => mergeUnlockedTopics(prev, cloudUnlocked));
       } catch {
         // Best-effort: session progress keeps working even if cloud sync fails.
       }
@@ -83,14 +102,37 @@ export function useProgress(totalTopics: number, user?: User | null) {
     [user]
   );
 
+  const unlockTopic = useCallback(
+    async (topicId: string): Promise<UnlockOutcome> => {
+      const topic = allTopics.find((t) => t.id === topicId);
+      if (!topic) return { ok: false, reason: "error" };
+      if (isTopicUnlocked(topic, unlockedTopics)) return { ok: true };
+
+      // Unlocking spends credits permanently, so it requires an account --
+      // signed-out progress is in-memory only and would make the purchase
+      // vanish on reload with no way to get it back.
+      if (!user) return { ok: false, reason: "sign-in-required" };
+
+      const result = await unlockTopicCloud(user.uid, topic, progress, allTopics);
+      if (!result.ok) return result;
+      setProgress(result.progress);
+      setUnlockedTopics(result.unlockedTopics);
+      return { ok: true };
+    },
+    [user, progress, unlockedTopics]
+  );
+
   const resetProgress = useCallback(() => {
     setProgress({});
+    setUnlockedTopics([]);
     if (user) {
       void saveCloudProgress(user.uid, {}).catch(() => {});
+      void saveCloudUnlocks(user.uid, []).catch(() => {});
     }
   }, [user]);
 
   const stats = computeOverallStats(progress, totalTopics);
+  const credits = computeCreditBalance(progress, unlockedTopics, allTopics);
 
-  return { progress, recordResult, resetProgress, stats };
+  return { progress, unlockedTopics, recordResult, resetProgress, unlockTopic, stats, credits };
 }

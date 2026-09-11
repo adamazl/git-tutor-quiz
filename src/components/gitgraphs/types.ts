@@ -8,4 +8,6 @@ export type DiagramKind =
   | "mergeThreeWay"
   | "remoteClone"
   | "remotePush"
-  | "remotePull";
+  | "remotePull"
+  | "rebase"
+  | "stash";

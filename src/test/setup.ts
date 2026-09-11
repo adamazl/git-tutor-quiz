@@ -38,6 +38,7 @@ vi.mock("firebase/firestore", () => ({
   getDoc: vi.fn(async () => ({ exists: () => false, data: () => undefined })),
   setDoc: vi.fn(async () => undefined),
   deleteDoc: vi.fn(async () => undefined),
+  runTransaction: vi.fn(),
 }));
 
 Object.defineProperty(window, "matchMedia", {

@@ -87,5 +87,26 @@ export function DiagramRenderer({ kind }: { kind: DiagramKind }) {
       return <BoxFlow boxes={[{ label: "Local Repo", caption: "your commits" }, { label: "Remote Repo", caption: "git push" }]} />;
     case "remotePull":
       return <BoxFlow boxes={[{ label: "Remote Repo", caption: "teammates' commits" }, { label: "Local Repo", caption: "git pull" }]} />;
+    case "rebase":
+      return (
+        <CommitGraph
+          nodes={[
+            { id: "a", x: 60, y: 80, label: "A" },
+            { id: "b", x: 140, y: 80, label: "B" },
+            { id: "f", x: 220, y: 80, label: "F'", highlight: true },
+          ]}
+          edges={[{ from: "a", to: "b" }, { from: "b", to: "f" }]}
+          refs={[{ nodeId: "b", text: "main" }, { nodeId: "f", text: "feature" }]}
+        />
+      );
+    case "stash":
+      return (
+        <BoxFlow
+          boxes={[
+            { label: "Working Dir", caption: "uncommitted changes" },
+            { label: "Stash", caption: "git stash" },
+          ]}
+        />
+      );
   }
 }

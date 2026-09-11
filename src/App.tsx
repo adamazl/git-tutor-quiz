@@ -12,7 +12,8 @@ import { topics } from "@/data/topics";
 
 export function App() {
   const { user } = useAuth();
-  const { progress, recordResult, resetProgress, stats } = useProgress(topics.length, user);
+  const { progress, unlockedTopics, recordResult, resetProgress, unlockTopic, stats, credits } =
+    useProgress(topics.length, user);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   function handleQuizComplete(topicId: string, score: number, totalQuestions: number) {
@@ -22,10 +23,26 @@ export function App() {
     }
   }
 
+  async function handleUnlock(topicId: string) {
+    const result = await unlockTopic(topicId);
+    if (!result.ok) {
+      const message =
+        result.reason === "insufficient-credits"
+          ? "Not enough credits to unlock this topic."
+          : result.reason === "sign-in-required"
+            ? "Sign in to unlock this topic."
+            : "Couldn't unlock this topic. Try again.";
+      toast.error(message);
+      return;
+    }
+    toast.success("Topic unlocked! 🔓");
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header
         totalXp={stats.totalXp}
+        credits={credits}
         user={user}
         onSignOut={signOutUser}
         onResetProgress={resetProgress}
@@ -40,8 +57,22 @@ export function App() {
         />
         <main className="min-w-0 flex-1">
           <Routes>
-            <Route path="/" element={<Dashboard progress={progress} />} />
-            <Route path="/topic/:id" element={<TopicPage onQuizComplete={handleQuizComplete} />} />
+            <Route
+              path="/"
+              element={
+                <Dashboard
+                  progress={progress}
+                  unlockedTopics={unlockedTopics}
+                  credits={credits}
+                  signedIn={Boolean(user)}
+                  onUnlock={handleUnlock}
+                />
+              }
+            />
+            <Route
+              path="/topic/:id"
+              element={<TopicPage unlockedTopics={unlockedTopics} onQuizComplete={handleQuizComplete} />}
+            />
           </Routes>
         </main>
       </div>
