@@ -3,7 +3,6 @@ import { FirebaseError } from "firebase/app";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -85,10 +84,6 @@ export function AccountDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{mode === "sign-up" ? "Create an account" : "Log in"}</DialogTitle>
-          <DialogDescription>
-            Optional — your progress already saves in this browser. An account lets it follow
-            you across devices.
-          </DialogDescription>
         </DialogHeader>
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-1.5">
