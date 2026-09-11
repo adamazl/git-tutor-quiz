@@ -11,7 +11,11 @@ interface DashboardProps {
 export function Dashboard({ progress }: DashboardProps) {
   return (
     <div className="p-4 sm:p-6">
-      <h2 className="text-xl font-semibold mb-4">Choose a topic</h2>
+      <h2 className="text-xl font-semibold">Choose a topic</h2>
+      <p className="text-muted-foreground mb-4 max-w-2xl">
+        Git Gud is a gamified way to learn Git. Work through bite-sized quizzes on core Git
+        commands, earn XP as you go, and track your progress across topics.
+      </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {topics.map((topic) => {
           const p = progress[topic.id];
