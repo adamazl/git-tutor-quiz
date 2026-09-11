@@ -104,7 +104,15 @@ export function useProgress(totalTopics: number, user?: User | null) {
     [user]
   );
 
+  const resetProgress = useCallback(() => {
+    setProgress({});
+    saveProgress({});
+    if (user) {
+      void saveCloudProgress(user.uid, {}).catch(() => {});
+    }
+  }, [user]);
+
   const stats = computeOverallStats(progress, totalTopics);
 
-  return { progress, recordResult, stats };
+  return { progress, recordResult, resetProgress, stats };
 }

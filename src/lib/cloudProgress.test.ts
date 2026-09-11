@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { getDoc, setDoc } from "firebase/firestore";
-import { loadCloudProgress, saveCloudProgress, mergeProgressMaps } from "./cloudProgress";
+import { deleteDoc, getDoc, setDoc } from "firebase/firestore";
+import { deleteCloudProgress, loadCloudProgress, saveCloudProgress, mergeProgressMaps } from "./cloudProgress";
 
 vi.mock("@/lib/firebase", () => ({ db: {} }));
 
@@ -35,6 +35,13 @@ describe("saveCloudProgress", () => {
       { progress },
       { merge: true }
     );
+  });
+});
+
+describe("deleteCloudProgress", () => {
+  it("deletes the user's Firestore document", async () => {
+    await deleteCloudProgress("uid-1");
+    expect(vi.mocked(deleteDoc)).toHaveBeenCalled();
   });
 });
 

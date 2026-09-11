@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { FirebaseError } from "firebase/app";
+import { useState, type FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,25 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, signUp } from "@/lib/auth";
+import { friendlyAuthError } from "@/lib/authErrors";
 import { firebaseConfigured } from "@/lib/firebase";
 
 type Mode = "sign-up" | "log-in";
-
-const ERROR_MESSAGES: Record<string, string> = {
-  "auth/email-already-in-use": "That email already has an account. Try logging in instead.",
-  "auth/invalid-credential": "Incorrect email or password.",
-  "auth/wrong-password": "Incorrect email or password.",
-  "auth/user-not-found": "No account found with that email.",
-  "auth/weak-password": "Password must be at least 6 characters.",
-  "auth/invalid-email": "That doesn't look like a valid email address.",
-};
-
-function friendlyError(error: unknown): string {
-  if (error instanceof FirebaseError) {
-    return ERROR_MESSAGES[error.code] ?? "Something went wrong. Please try again.";
-  }
-  return "Something went wrong. Please try again.";
-}
 
 export function AccountDialog() {
   const [open, setOpen] = useState(false);
@@ -52,7 +36,7 @@ export function AccountDialog() {
     if (!nextOpen) resetForm();
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
 
@@ -70,7 +54,7 @@ export function AccountDialog() {
       }
       handleOpenChange(false);
     } catch (err) {
-      setError(friendlyError(err));
+      setError(friendlyAuthError(err));
     } finally {
       setSubmitting(false);
     }
