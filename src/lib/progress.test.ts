@@ -1,46 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-  loadProgress,
-  saveProgress,
-  recordTopicResult,
-  computeOverallStats,
-} from "./progress";
-
-const STORAGE_KEY = "git-tutor-progress";
-
-describe("progress storage", () => {
-  beforeEach(() => {
-    window.localStorage.clear();
-  });
-
-  it("returns an empty object when nothing is stored", () => {
-    expect(loadProgress()).toEqual({});
-  });
-
-  it("round-trips progress through localStorage", () => {
-    saveProgress({ commit: { completed: true, bestScore: 2, totalQuestions: 2 } });
-    expect(window.localStorage.getItem(STORAGE_KEY)).not.toBeNull();
-    expect(loadProgress()).toEqual({
-      commit: { completed: true, bestScore: 2, totalQuestions: 2 },
-    });
-  });
-
-  it("returns an empty object if stored JSON is corrupt", () => {
-    window.localStorage.setItem(STORAGE_KEY, "not json");
-    expect(loadProgress()).toEqual({});
-  });
-
-  it("returns an empty object if stored JSON is valid but the wrong shape", () => {
-    window.localStorage.setItem(STORAGE_KEY, "null");
-    expect(loadProgress()).toEqual({});
-
-    window.localStorage.setItem(STORAGE_KEY, "[1,2]");
-    expect(loadProgress()).toEqual({});
-
-    window.localStorage.setItem(STORAGE_KEY, "5");
-    expect(loadProgress()).toEqual({});
-  });
-});
+import { describe, it, expect } from "vitest";
+import { recordTopicResult, computeOverallStats } from "./progress";
 
 describe("recordTopicResult", () => {
   it("marks a topic completed only when the score is perfect", () => {

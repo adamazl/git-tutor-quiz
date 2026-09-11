@@ -10,26 +10,6 @@ export interface TopicProgress {
 
 export type ProgressMap = Record<string, TopicProgress>;
 
-const STORAGE_KEY = "git-tutor-progress";
-
-export function loadProgress(): ProgressMap {
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) return {};
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-      return {};
-    }
-    return parsed as ProgressMap;
-  } catch {
-    return {};
-  }
-}
-
-export function saveProgress(progress: ProgressMap): void {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-}
-
 export function recordTopicResult(
   progress: ProgressMap,
   topicId: string,
@@ -55,12 +35,13 @@ export function computeOverallStats(progress: ProgressMap, totalTopics: number) 
   return { topicsMastered, totalTopics, totalXp };
 }
 
+// Progress only persists in the cloud, so it only survives for signed-in
+// users. Signed-out play still updates this in-memory state for the
+// current session, but nothing is saved once the tab closes.
 export function useProgress(totalTopics: number, user?: User | null) {
-  const [progress, setProgress] = useState<ProgressMap>(() => loadProgress());
+  const [progress, setProgress] = useState<ProgressMap>({});
   const syncedUidRef = useRef<string | null>(null);
 
-  // Local storage stays the source of truth regardless of auth state, so
-  // anonymous use is never affected by (or blocked on) cloud sync below.
   useEffect(() => {
     if (!user) {
       syncedUidRef.current = null;
@@ -76,12 +57,11 @@ export function useProgress(totalTopics: number, user?: User | null) {
         if (cancelled) return;
         setProgress((prev) => {
           const merged = mergeProgressMaps(prev, cloudProgress);
-          saveProgress(merged);
           void saveCloudProgress(user.uid, merged).catch(() => {});
           return merged;
         });
       } catch {
-        // Best-effort: local progress keeps working even if cloud sync fails.
+        // Best-effort: session progress keeps working even if cloud sync fails.
       }
     })();
 
@@ -94,7 +74,6 @@ export function useProgress(totalTopics: number, user?: User | null) {
     (topicId: string, score: number, totalQuestions: number) => {
       setProgress((prev) => {
         const next = recordTopicResult(prev, topicId, score, totalQuestions);
-        saveProgress(next);
         if (user) {
           void saveCloudProgress(user.uid, next).catch(() => {});
         }
@@ -106,7 +85,6 @@ export function useProgress(totalTopics: number, user?: User | null) {
 
   const resetProgress = useCallback(() => {
     setProgress({});
-    saveProgress({});
     if (user) {
       void saveCloudProgress(user.uid, {}).catch(() => {});
     }

@@ -38,7 +38,7 @@ describe("AccountDialog", () => {
     render(<AccountDialog />);
 
     await user.click(screen.getByRole("button", { name: /Sign in to save progress/ }));
-    await user.click(screen.getByRole("button", { name: "Have an account? Log in" }));
+    await user.click(screen.getByRole("tab", { name: "Log in" }));
     await user.type(screen.getByLabelText("Email"), "a@b.com");
     await user.type(screen.getByLabelText("Password"), "password123");
     await user.click(screen.getByRole("button", { name: "Log in" }));
