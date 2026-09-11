@@ -26,11 +26,13 @@ export function App() {
   async function handleUnlock(topicId: string) {
     const result = await unlockTopic(topicId);
     if (!result.ok) {
-      toast.error(
+      const message =
         result.reason === "insufficient-credits"
           ? "Not enough credits to unlock this topic."
-          : "Couldn't unlock this topic. Try again."
-      );
+          : result.reason === "sign-in-required"
+            ? "Sign in to unlock this topic."
+            : "Couldn't unlock this topic. Try again.";
+      toast.error(message);
       return;
     }
     toast.success("Topic unlocked! 🔓");
@@ -62,6 +64,7 @@ export function App() {
                   progress={progress}
                   unlockedTopics={unlockedTopics}
                   credits={credits}
+                  signedIn={Boolean(user)}
                   onUnlock={handleUnlock}
                 />
               }

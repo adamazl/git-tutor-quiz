@@ -164,32 +164,23 @@ describe("unlockTopic", () => {
     vi.mocked(unlockTopicCloud).mockReset();
   });
 
-  it("checks affordability locally when signed out and never calls the cloud", async () => {
+  it("requires sign-in when signed out, regardless of balance, and never calls the cloud", async () => {
     const { result } = renderHook(() => useProgress(9, null));
 
     act(() => {
-      result.current.recordResult("commit", 2, 2); // 25 credits, rebase costs 30
+      result.current.recordResult("commit", 2, 2);
+      result.current.recordResult("branch", 2, 2); // 50 credits -- plenty for rebase's 30
     });
-    expect(result.current.credits).toBe(25);
+    expect(result.current.credits).toBe(50);
 
     let outcome: Awaited<ReturnType<typeof result.current.unlockTopic>> | undefined;
     await act(async () => {
       outcome = await result.current.unlockTopic("rebase");
     });
 
-    expect(outcome).toEqual({ ok: false, reason: "insufficient-credits" });
+    expect(outcome).toEqual({ ok: false, reason: "sign-in-required" });
     expect(unlockTopicCloud).not.toHaveBeenCalled();
-
-    act(() => {
-      result.current.recordResult("branch", 2, 2); // now 50 credits
-    });
-
-    await act(async () => {
-      outcome = await result.current.unlockTopic("rebase");
-    });
-
-    expect(outcome).toEqual({ ok: true });
-    expect(result.current.unlockedTopics).toEqual(["rebase"]);
+    expect(result.current.unlockedTopics).toEqual([]);
   });
 
   it("delegates to the transactional cloud unlock when signed in", async () => {

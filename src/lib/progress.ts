@@ -47,7 +47,7 @@ export function computeOverallStats(progress: ProgressMap, totalTopics: number) 
 
 export type UnlockOutcome =
   | { ok: true }
-  | { ok: false; reason: "insufficient-credits" | "unavailable" | "error" };
+  | { ok: false; reason: "insufficient-credits" | "sign-in-required" | "unavailable" | "error" };
 
 // Progress only persists in the cloud, so it only survives for signed-in
 // users. Signed-out play still updates this in-memory state for the
@@ -108,16 +108,10 @@ export function useProgress(totalTopics: number, user?: User | null) {
       if (!topic) return { ok: false, reason: "error" };
       if (isTopicUnlocked(topic, unlockedTopics)) return { ok: true };
 
-      if (!user) {
-        // Signed-out play is in-memory and single-tab, so there's no
-        // concurrent writer to race -- a plain local balance check is safe.
-        const balance = computeCreditBalance(progress, unlockedTopics, allTopics);
-        if (balance < (topic.unlockCost ?? 0)) {
-          return { ok: false, reason: "insufficient-credits" };
-        }
-        setUnlockedTopics((prev) => [...prev, topicId]);
-        return { ok: true };
-      }
+      // Unlocking spends credits permanently, so it requires an account --
+      // signed-out progress is in-memory only and would make the purchase
+      // vanish on reload with no way to get it back.
+      if (!user) return { ok: false, reason: "sign-in-required" };
 
       const result = await unlockTopicCloud(user.uid, topic, progress, allTopics);
       if (!result.ok) return result;

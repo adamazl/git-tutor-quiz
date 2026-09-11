@@ -1,5 +1,7 @@
 import { LockIcon } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { AccountDialog } from "@/components/AccountDialog";
 import { ContinueCard } from "@/components/ContinueCard";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,7 @@ interface DashboardProps {
   progress: ProgressMap;
   unlockedTopics?: string[];
   credits?: number;
+  signedIn?: boolean;
   onUnlock?: (topicId: string) => void;
 }
 
@@ -19,8 +22,11 @@ export function Dashboard({
   progress,
   unlockedTopics = [],
   credits = 0,
+  signedIn = false,
   onUnlock = () => {},
 }: DashboardProps) {
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+
   return (
     <div className="p-4 sm:p-6">
       <div className="bg-muted/50 mb-6 flex flex-col items-center gap-3 rounded-lg p-6 text-center sm:p-8">
@@ -45,12 +51,20 @@ export function Dashboard({
                     <LockIcon className="h-4 w-4" />
                     {topic.title}
                   </CardTitle>
-                  <CardDescription>{topic.summary}</CardDescription>
+                  <CardDescription>
+                    {topic.summary} Requires {cost} credits.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button disabled={!affordable} onClick={() => onUnlock(topic.id)}>
-                    Unlock for {cost} credits
-                  </Button>
+                  {signedIn ? (
+                    <Button disabled={!affordable} onClick={() => onUnlock(topic.id)}>
+                      Unlock for {cost} credits
+                    </Button>
+                  ) : (
+                    <Button variant="outline" onClick={() => setAccountDialogOpen(true)}>
+                      Sign in to unlock
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             );
@@ -77,6 +91,12 @@ export function Dashboard({
           );
         })}
       </div>
+      <AccountDialog
+        open={accountDialogOpen}
+        onOpenChange={setAccountDialogOpen}
+        hideTrigger
+        initialMode="sign-up"
+      />
     </div>
   );
 }
