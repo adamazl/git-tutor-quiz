@@ -1,5 +1,6 @@
 import type { User } from "firebase/auth";
 import { MenuIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AccountDialog } from "@/components/AccountDialog";
 import { AccountMenu } from "@/components/AccountMenu";
@@ -27,9 +28,11 @@ export function Header({ totalXp, user, onSignOut, onResetProgress, onMenuClick 
         >
           <MenuIcon />
         </Button>
-        <h1 className="flex items-center gap-2 min-w-0 text-lg font-semibold">
-          <Logo className="h-7 w-7 shrink-0" />
-          <span className="truncate">Git Gud</span>
+        <h1 className="min-w-0 text-lg font-semibold">
+          <Link to="/" className="flex items-center gap-2 min-w-0">
+            <Logo className="h-7 w-7 shrink-0" />
+            <span className="truncate">Git Gud</span>
+          </Link>
         </h1>
       </div>
       <div className="flex items-center gap-1 sm:gap-3 shrink-0">
