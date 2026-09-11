@@ -1,4 +1,4 @@
-# Git Tutor Quiz
+# Git Gud
 
 A gamified Git tutorial & quiz app, built with React + TypeScript + Vite.
 
