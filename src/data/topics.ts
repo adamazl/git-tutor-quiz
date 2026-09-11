@@ -319,4 +319,67 @@ export const topics: Topic[] = [
       },
     ],
   },
+  {
+    id: "stash",
+    tier: "intermediate",
+    unlockCost: 30,
+    title: "git stash",
+    summary: "Set aside uncommitted changes temporarily without committing them.",
+    explanation:
+      "Sometimes you need to switch branches or pull in teammates' work, but your working directory is mid-edit and not ready for a commit. `git stash` shelves those uncommitted changes onto a stack and gives you a clean working directory again.\n\nWhen you're ready to pick the work back up, `git stash pop` reapplies the most recent stash and removes it from the stack. Nothing is lost — it's just parked out of the way.",
+    diagrams: ["stash"],
+    quiz: [
+      {
+        question: "What does `git stash` do to your uncommitted changes?",
+        options: [
+          "Shelves them on a stack and restores a clean working directory",
+          "Permanently deletes them",
+          "Commits them immediately",
+          "Pushes them to the remote",
+        ],
+        correctIndex: 0,
+        explanation: "Stashing sets changes aside without committing or discarding them.",
+      },
+      {
+        question: "How do you bring back the most recently stashed changes?",
+        options: ["`git stash pop`", "`git stash delete`", "`git checkout stash`", "`git pull stash`"],
+        correctIndex: 0,
+        explanation: "`git stash pop` reapplies the latest stash and removes it from the stack.",
+      },
+    ],
+  },
+  {
+    id: "rebase",
+    tier: "advanced",
+    unlockCost: 50,
+    title: "git rebase",
+    summary: "Replay your branch's commits onto a new base for a cleaner, linear history.",
+    explanation:
+      "`git rebase <branch>` takes the commits unique to your current branch and replays them one by one on top of `<branch>`'s latest commit, instead of tying the two histories together with a merge commit. The result reads as if you'd started your work from that newer point all along.\n\nThis is powerful but rewrites commit history — the replayed commits get new hashes. Avoid rebasing commits that have already been pushed and shared, since anyone else working from the old commits will end up with a diverged, conflicting history.",
+    diagrams: ["rebase"],
+    quiz: [
+      {
+        question: "What does `git rebase main` do to your current branch's commits?",
+        options: [
+          "Replays them on top of main's latest commit, giving them new hashes",
+          "Deletes them and starts over",
+          "Merges main into your branch with a merge commit",
+          "Pushes them directly to main",
+        ],
+        correctIndex: 0,
+        explanation: "Rebase reapplies your commits on a new base rather than creating a merge commit.",
+      },
+      {
+        question: "Why should you avoid rebasing commits you've already pushed and shared?",
+        options: [
+          "It rewrites their hashes, so collaborators working from the old commits get a diverged history",
+          "It's not technically possible",
+          "It automatically force-pushes for you",
+          "It deletes the remote branch",
+        ],
+        correctIndex: 0,
+        explanation: "Rebasing shared history creates two conflicting versions of the same commits.",
+      },
+    ],
+  },
 ];

@@ -14,6 +14,8 @@ const allKinds: DiagramKind[] = [
   "remoteClone",
   "remotePush",
   "remotePull",
+  "rebase",
+  "stash",
 ];
 
 describe("DiagramRenderer", () => {

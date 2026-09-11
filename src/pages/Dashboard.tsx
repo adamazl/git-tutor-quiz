@@ -38,7 +38,7 @@ export function Dashboard({
         </p>
       </div>
       <h2 className="text-xl font-semibold mb-4">Choose a topic</h2>
-      <ContinueCard progress={progress} />
+      <ContinueCard progress={progress} unlockedTopics={unlockedTopics} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {topics.map((topic) => {
           if (!isTopicUnlocked(topic, unlockedTopics)) {

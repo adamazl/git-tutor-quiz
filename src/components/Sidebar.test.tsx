@@ -20,6 +20,6 @@ describe("Sidebar", () => {
     expect(screen.getByText("git commit")).toBeInTheDocument();
     expect(screen.getByText("✓")).toBeInTheDocument();
     expect(screen.getByText("1/2")).toBeInTheDocument();
-    expect(screen.getByText("1 / 9 topics mastered")).toBeInTheDocument();
+    expect(screen.getByText("1 / 11 topics mastered")).toBeInTheDocument();
   });
 });

@@ -54,7 +54,7 @@ describe("ContinueCard", () => {
     );
   });
 
-  it("shows a mastery message once every topic is completed", () => {
+  it("shows a mastery message once every unlocked topic is completed, without recommending a locked one", () => {
     const progress: ProgressMap = Object.fromEntries(
       ["init", "add", "commit", "branch", "checkout", "merge", "clone", "push", "pull"].map(
         (id) => [id, { completed: true, bestScore: 2, totalQuestions: 2 }]
@@ -68,5 +68,23 @@ describe("ContinueCard", () => {
     );
 
     expect(screen.getByText(/mastered every topic/)).toBeInTheDocument();
+    expect(screen.queryByText(/git stash/)).not.toBeInTheDocument();
+  });
+
+  it("recommends an unlocked intermediate/advanced topic once it's been unlocked", () => {
+    const progress: ProgressMap = Object.fromEntries(
+      ["init", "add", "commit", "branch", "checkout", "merge", "clone", "push", "pull"].map(
+        (id) => [id, { completed: true, bestScore: 2, totalQuestions: 2 }]
+      )
+    );
+
+    render(
+      <MemoryRouter>
+        <ContinueCard progress={progress} unlockedTopics={["stash"]} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/git stash/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start" })).toHaveAttribute("href", "/topic/stash");
   });
 });
