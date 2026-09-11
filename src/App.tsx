@@ -12,7 +12,7 @@ import { topics } from "@/data/topics";
 
 export function App() {
   const { user } = useAuth();
-  const { progress, recordResult, stats } = useProgress(topics.length, user);
+  const { progress, recordResult, resetProgress, stats } = useProgress(topics.length, user);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   function handleQuizComplete(topicId: string, score: number, totalQuestions: number) {
@@ -28,6 +28,7 @@ export function App() {
         totalXp={stats.totalXp}
         user={user}
         onSignOut={signOutUser}
+        onResetProgress={resetProgress}
         onMenuClick={() => setSidebarOpen(true)}
       />
       <div className="flex flex-1">

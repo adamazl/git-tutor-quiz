@@ -2,6 +2,7 @@ import type { User } from "firebase/auth";
 import { MenuIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountDialog } from "@/components/AccountDialog";
+import { AccountMenu } from "@/components/AccountMenu";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -9,10 +10,11 @@ interface HeaderProps {
   totalXp: number;
   user: User | null;
   onSignOut: () => void;
+  onResetProgress: () => void;
   onMenuClick: () => void;
 }
 
-export function Header({ totalXp, user, onSignOut, onMenuClick }: HeaderProps) {
+export function Header({ totalXp, user, onSignOut, onResetProgress, onMenuClick }: HeaderProps) {
   return (
     <header className="flex items-center justify-between gap-2 border-b px-2 py-3 sm:px-6 sm:py-4">
       <div className="flex items-center gap-2 min-w-0">
@@ -34,14 +36,7 @@ export function Header({ totalXp, user, onSignOut, onMenuClick }: HeaderProps) {
         <p className="text-sm text-muted-foreground whitespace-nowrap">⭐ {totalXp} XP</p>
         <ThemeToggle />
         {user ? (
-          <div className="flex items-center gap-2">
-            <p className="hidden truncate text-sm text-muted-foreground sm:block sm:max-w-[10rem]">
-              {user.email}
-            </p>
-            <Button variant="ghost" size="sm" onClick={onSignOut}>
-              Sign out
-            </Button>
-          </div>
+          <AccountMenu user={user} onSignOut={onSignOut} onResetProgress={onResetProgress} />
         ) : (
           <AccountDialog />
         )}

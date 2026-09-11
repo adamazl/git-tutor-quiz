@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import type { User } from "firebase/auth";
-import { useProgress, saveProgress } from "./progress";
+import { useProgress, saveProgress, loadProgress } from "./progress";
 import { loadCloudProgress, saveCloudProgress } from "./cloudProgress";
 
 vi.mock("./cloudProgress", () => ({
@@ -73,5 +73,46 @@ describe("useProgress cloud sync", () => {
         commit: { completed: true, bestScore: 2, totalQuestions: 2 },
       })
     );
+  });
+});
+
+describe("resetProgress", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.mocked(loadCloudProgress).mockReset();
+    vi.mocked(saveCloudProgress).mockReset().mockResolvedValue(undefined);
+  });
+
+  it("clears local progress and does not touch the cloud when signed out", () => {
+    saveProgress({ commit: { completed: true, bestScore: 2, totalQuestions: 2 } });
+    const { result } = renderHook(() => useProgress(9, null));
+
+    act(() => {
+      result.current.resetProgress();
+    });
+
+    expect(result.current.progress).toEqual({});
+    expect(loadProgress()).toEqual({});
+    expect(saveCloudProgress).not.toHaveBeenCalled();
+  });
+
+  it("clears local and cloud progress when signed in", async () => {
+    vi.mocked(loadCloudProgress).mockResolvedValueOnce({});
+    const { result } = renderHook(() => useProgress(9, fakeUser));
+    await waitFor(() => expect(loadCloudProgress).toHaveBeenCalled());
+
+    act(() => {
+      result.current.recordResult("commit", 2, 2);
+    });
+    await waitFor(() => expect(result.current.progress.commit).toBeDefined());
+    vi.mocked(saveCloudProgress).mockClear();
+
+    act(() => {
+      result.current.resetProgress();
+    });
+
+    expect(result.current.progress).toEqual({});
+    expect(loadProgress()).toEqual({});
+    expect(saveCloudProgress).toHaveBeenCalledWith("uid-1", {});
   });
 });

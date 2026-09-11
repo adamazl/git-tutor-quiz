@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { ProgressMap } from "@/lib/progress";
 
@@ -13,6 +13,11 @@ export async function loadCloudProgress(uid: string): Promise<ProgressMap> {
 export async function saveCloudProgress(uid: string, progress: ProgressMap): Promise<void> {
   if (!db) return;
   await setDoc(doc(db, "users", uid), { progress }, { merge: true });
+}
+
+export async function deleteCloudProgress(uid: string): Promise<void> {
+  if (!db) return;
+  await deleteDoc(doc(db, "users", uid));
 }
 
 export function mergeProgressMaps(a: ProgressMap, b: ProgressMap): ProgressMap {
