@@ -7,6 +7,8 @@ export interface QuizQuestion {
   explanation: string;
 }
 
+export type TopicTier = "beginner" | "intermediate" | "advanced";
+
 export interface Topic {
   id: string;
   title: string;
@@ -14,11 +16,15 @@ export interface Topic {
   explanation: string;
   diagrams: DiagramKind[];
   quiz: QuizQuestion[];
+  tier: TopicTier;
+  /** Credits required to unlock this topic. Beginner topics are always free. */
+  unlockCost?: number;
 }
 
 export const topics: Topic[] = [
   {
     id: "init",
+    tier: "beginner",
     title: "git init",
     summary: "Turn a folder into a Git repository.",
     explanation:
@@ -51,6 +57,7 @@ export const topics: Topic[] = [
   },
   {
     id: "add",
+    tier: "beginner",
     title: "git add",
     summary: "Stage changes so Git knows what to include in the next commit.",
     explanation:
@@ -83,6 +90,7 @@ export const topics: Topic[] = [
   },
   {
     id: "commit",
+    tier: "beginner",
     title: "git commit",
     summary: "Save a permanent snapshot of your staged changes.",
     explanation:
@@ -115,6 +123,7 @@ export const topics: Topic[] = [
   },
   {
     id: "branch",
+    tier: "beginner",
     title: "git branch",
     summary: "Create an independent line of development.",
     explanation:
@@ -147,6 +156,7 @@ export const topics: Topic[] = [
   },
   {
     id: "checkout",
+    tier: "beginner",
     title: "git checkout",
     summary: "Switch which branch (or commit) you're working on.",
     explanation:
@@ -179,6 +189,7 @@ export const topics: Topic[] = [
   },
   {
     id: "merge",
+    tier: "beginner",
     title: "git merge",
     summary: "Combine changes from one branch into another.",
     explanation:
@@ -211,6 +222,7 @@ export const topics: Topic[] = [
   },
   {
     id: "clone",
+    tier: "beginner",
     title: "git clone",
     summary: "Copy an existing remote repository to your machine.",
     explanation:
@@ -243,6 +255,7 @@ export const topics: Topic[] = [
   },
   {
     id: "push",
+    tier: "beginner",
     title: "git push",
     summary: "Upload your local commits to a remote repository.",
     explanation:
@@ -275,6 +288,7 @@ export const topics: Topic[] = [
   },
   {
     id: "pull",
+    tier: "beginner",
     title: "git pull",
     summary: "Download and merge changes from a remote repository.",
     explanation:

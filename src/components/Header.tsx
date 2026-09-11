@@ -9,13 +9,14 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface HeaderProps {
   totalXp: number;
+  credits: number;
   user: User | null;
   onSignOut: () => void;
   onResetProgress: () => void;
   onMenuClick: () => void;
 }
 
-export function Header({ totalXp, user, onSignOut, onResetProgress, onMenuClick }: HeaderProps) {
+export function Header({ totalXp, credits, user, onSignOut, onResetProgress, onMenuClick }: HeaderProps) {
   return (
     <header className="flex items-center justify-between gap-2 border-b px-2 py-3 sm:px-6 sm:py-4">
       <div className="flex items-center gap-2 min-w-0">
@@ -37,6 +38,7 @@ export function Header({ totalXp, user, onSignOut, onResetProgress, onMenuClick 
       </div>
       <div className="flex items-center gap-1 sm:gap-3 shrink-0">
         <p className="text-sm text-muted-foreground whitespace-nowrap">⭐ {totalXp} XP</p>
+        <p className="text-sm text-muted-foreground whitespace-nowrap">🪙 {credits}</p>
         <ThemeToggle />
         {user ? (
           <AccountMenu user={user} onSignOut={onSignOut} onResetProgress={onResetProgress} />

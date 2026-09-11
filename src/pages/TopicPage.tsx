@@ -4,12 +4,14 @@ import { DiagramRenderer } from "@/components/gitgraphs/DiagramRenderer";
 import { Quiz } from "@/components/Quiz";
 import { topics } from "@/data/topics";
 import { renderWithInlineCode } from "@/lib/inline-code";
+import { isTopicUnlocked } from "@/lib/credits";
 
 interface TopicPageProps {
+  unlockedTopics?: string[];
   onQuizComplete: (topicId: string, score: number, totalQuestions: number) => void;
 }
 
-export function TopicPage({ onQuizComplete }: TopicPageProps) {
+export function TopicPage({ unlockedTopics = [], onQuizComplete }: TopicPageProps) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const topic = topics.find((t) => t.id === id);
@@ -18,6 +20,17 @@ export function TopicPage({ onQuizComplete }: TopicPageProps) {
     return (
       <div className="p-4 sm:p-6">
         <p>Topic not found.</p>
+        <Link to="/" className="underline">
+          Back to dashboard
+        </Link>
+      </div>
+    );
+  }
+
+  if (!isTopicUnlocked(topic, unlockedTopics)) {
+    return (
+      <div className="p-4 sm:p-6">
+        <p>This topic is locked. Unlock it from the dashboard first.</p>
         <Link to="/" className="underline">
           Back to dashboard
         </Link>
