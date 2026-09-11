@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ContinueCard } from "@/components/ContinueCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { topics } from "@/data/topics";
@@ -16,6 +17,7 @@ export function Dashboard({ progress }: DashboardProps) {
         Git Gud is a gamified way to learn Git. Work through bite-sized quizzes on core Git
         commands, earn XP as you go, and track your progress across topics.
       </p>
+      <ContinueCard progress={progress} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {topics.map((topic) => {
           const p = progress[topic.id];
