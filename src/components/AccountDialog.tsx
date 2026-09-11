@@ -79,7 +79,8 @@ export function AccountDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button variant="outline" size="sm" />}>
-        Sign in to save progress
+        <span className="sm:hidden">Sign in</span>
+        <span className="hidden sm:inline">Sign in to save progress</span>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
