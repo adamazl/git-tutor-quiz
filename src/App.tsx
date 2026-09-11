@@ -6,10 +6,12 @@ import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/pages/Dashboard";
 import { TopicPage } from "@/pages/TopicPage";
 import { useProgress } from "@/lib/progress";
+import { useAuth, signOutUser } from "@/lib/auth";
 import { topics } from "@/data/topics";
 
 export function App() {
-  const { progress, recordResult, stats } = useProgress(topics.length);
+  const { user } = useAuth();
+  const { progress, recordResult, stats } = useProgress(topics.length, user);
 
   function handleQuizComplete(topicId: string, score: number, totalQuestions: number) {
     recordResult(topicId, score, totalQuestions);
@@ -20,7 +22,7 @@ export function App() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header totalXp={stats.totalXp} />
+      <Header totalXp={stats.totalXp} user={user} onSignOut={signOutUser} />
       <div className="flex flex-1">
         <Sidebar progress={progress} topicsMastered={stats.topicsMastered} />
         <main className="flex-1">

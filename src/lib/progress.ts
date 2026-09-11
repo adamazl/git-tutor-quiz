@@ -1,4 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { User } from "firebase/auth";
+import { loadCloudProgress, saveCloudProgress, mergeProgressMaps } from "@/lib/cloudProgress";
 
 export interface TopicProgress {
   completed: boolean;
@@ -53,18 +55,53 @@ export function computeOverallStats(progress: ProgressMap, totalTopics: number) 
   return { topicsMastered, totalTopics, totalXp };
 }
 
-export function useProgress(totalTopics: number) {
+export function useProgress(totalTopics: number, user?: User | null) {
   const [progress, setProgress] = useState<ProgressMap>(() => loadProgress());
+  const syncedUidRef = useRef<string | null>(null);
+
+  // Local storage stays the source of truth regardless of auth state, so
+  // anonymous use is never affected by (or blocked on) cloud sync below.
+  useEffect(() => {
+    if (!user) {
+      syncedUidRef.current = null;
+      return;
+    }
+    if (syncedUidRef.current === user.uid) return;
+    syncedUidRef.current = user.uid;
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        const cloudProgress = await loadCloudProgress(user.uid);
+        if (cancelled) return;
+        setProgress((prev) => {
+          const merged = mergeProgressMaps(prev, cloudProgress);
+          saveProgress(merged);
+          void saveCloudProgress(user.uid, merged).catch(() => {});
+          return merged;
+        });
+      } catch {
+        // Best-effort: local progress keeps working even if cloud sync fails.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const recordResult = useCallback(
     (topicId: string, score: number, totalQuestions: number) => {
       setProgress((prev) => {
         const next = recordTopicResult(prev, topicId, score, totalQuestions);
         saveProgress(next);
+        if (user) {
+          void saveCloudProgress(user.uid, next).catch(() => {});
+        }
         return next;
       });
     },
-    []
+    [user]
   );
 
   const stats = computeOverallStats(progress, totalTopics);
