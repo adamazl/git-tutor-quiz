@@ -13,7 +13,7 @@ describe("Sidebar", () => {
 
     render(
       <MemoryRouter>
-        <Sidebar progress={progress} topicsMastered={1} />
+        <Sidebar progress={progress} topicsMastered={1} open onClose={() => {}} />
       </MemoryRouter>
     );
 
